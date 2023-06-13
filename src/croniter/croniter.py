@@ -987,3 +987,52 @@ class HashExpander:
 EXPANDERS = OrderedDict([
     ('hash', HashExpander),
 ])
+if __name__ == '__main__':
+    import string
+    # cron = '0 16 1,2,3 * *'
+    crons_to_try = [
+        '0 16 1,2,3 * *',
+        '0 16 */2 * *',
+        '@weekly',
+        'H 19 */3 * *',
+        '0 16 1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31 * FRI',
+        '0 16 2,4,6,8 * FRI',
+        '0 16 * * FRI',
+        '0 16 */2 * FRI',
+        '0 16 */2 * SAT',
+        '*/2 * * * *',
+        '1-59/2 * * * *',
+        '*/5 * * * *',
+        '*/15 * * * *',
+        '30 * * * *',
+        '0 */2 * * *',
+        '0 9-17 * * *',
+        '0 0 * * *',
+        '0 0 * * FRI',
+        '0 0 * * 1-5',
+        '0 0 * * 6,0',
+        '0 0 1 */2 *',
+        '0 0 1 */6 *',
+        '5 0 * 8 *',
+        '15 14 1 * *',
+        '0 22 * * 1-5',
+        '23 0-20/2 * * *',
+        '5 4 * * sun',
+        '0 0,12 1 */2 *',
+        '0 4 8-14 * *',
+        '0 0 1,15 * 3',
+        '5 0 * 8 *',
+        '0 0,12 1 */2 * ',
+        '0 18 1-7,15-21,29-31 * */7',
+        '0 18 8-14,22-28 * */7',
+    ]
+    for cron in crons_to_try:
+        print(f'\n---------- Processing "{cron}"')
+        hash_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        if re.search('h', cron, re.I):
+            c = croniter(cron, datetime.datetime(2023, 5, 1), hash_id=hash_id, implement_cron_bug=True)
+        else:
+            c = croniter(cron, datetime.datetime(2023, 5, 1), hash_id=hash_id, implement_cron_bug=True)
+        # print('nth_weekday_of_month:', c.nth_weekday_of_month)
+        for i in range(0, 15):
+            print(c.get_next(datetime.datetime).strftime("%Y-%m-%d %H:%M:%S (%A)"))
