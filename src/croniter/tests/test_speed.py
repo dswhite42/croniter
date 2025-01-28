@@ -1,14 +1,12 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, print_function
 from datetime import datetime
 from croniter import croniter
 
 from croniter.tests import base
 
 
-class timerTest(object):
+class timerTest:
     def __init__(self):
         self.tests = tuple(getattr(self, m)
                            for m in dir(self)

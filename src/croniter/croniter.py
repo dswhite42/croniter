@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, print_function, division
 
 import traceback as _traceback
 import copy
@@ -102,7 +100,7 @@ class CroniterNotAlphaError(CroniterBadCronError):
     pass
 
 
-class croniter(object):
+class croniter:
     MONTHS_IN_YEAR = 12
     RANGES = (
         (0, 59),
@@ -187,7 +185,7 @@ class croniter(object):
             return cls.ALPHACONV[index][key]
         except KeyError:
             raise CroniterNotAlphaError(
-                "[{0}] is not acceptable".format(" ".join(expressions)))
+                "[{}] is not acceptable".format(" ".join(expressions)))
 
     def get_next(self, ret_type=None, start_time=None):
         self.set_current(start_time, force=True)
@@ -260,7 +258,7 @@ class croniter(object):
             # If requested, handle a bug in vixie cron/ISC cron where day_of_month and day_of_week form
             # an intersection (AND) instead of a union (OR) if either field is an asterisk or starts with an asterisk
             # (https://crontab.guru/cron-bug.html)
-            if self._implement_cron_bug and (re.match('\*', self.expressions[2]) or  re.match('\*', self.expressions[4])):
+            if self._implement_cron_bug and (re.match(r'\*', self.expressions[2]) or  re.match(r'\*', self.expressions[4])):
                 # To produce a schedule identical to the cron bug, we'll bypass the code that
                 # makes a union of DOM and DOW, and instead skip to the code that does an intersect instead
                 pass
@@ -676,8 +674,8 @@ class croniter(object):
                                 assert (nth >= 1 and nth <= 5)
                             except (KeyError, ValueError, AssertionError):
                                 raise CroniterBadCronError(
-                                    "[{0}] is not acceptable.  Invalid day_of_week "
-                                    "value: '{1}'".format(expr_format, nth))
+                                    "[{}] is not acceptable.  Invalid day_of_week "
+                                    "value: '{}'".format(expr_format, nth))
                         elif last:
                             e = last
                             nth = g['pre']  # 'l'
@@ -707,10 +705,10 @@ class croniter(object):
                         high = '31'
 
                     if not only_int_re.search(low):
-                        low = "{0}".format(cls._alphaconv(i, low, expressions))
+                        low = f"{cls._alphaconv(i, low, expressions)}"
 
                     if not only_int_re.search(high):
-                        high = "{0}".format(cls._alphaconv(i, high, expressions))
+                        high = f"{cls._alphaconv(i, high, expressions)}"
 
                     if (
                         not low or not high or int(low) > int(high)
@@ -721,25 +719,25 @@ class croniter(object):
                             high = '7'
                         else:
                             raise CroniterBadCronError(
-                                "[{0}] is not acceptable".format(expr_format))
+                                f"[{expr_format}] is not acceptable")
 
                     low, high, step = map(int, [low, high, step])
                     if (
                         max(low, high) > max(cls.RANGES[i][0], cls.RANGES[i][1])
                     ):
                         raise CroniterBadCronError(
-                            "{0} is out of bands".format(expr_format))
+                            f"{expr_format} is out of bands")
                     try:
                         rng = range(low, high + 1, step)
                     except ValueError as exc:
                         raise CroniterBadCronError(
-                            'invalid range: {0}'.format(exc))
-                    e_list += (["{0}#{1}".format(item, nth) for item in rng]
+                            f'invalid range: {exc}')
+                    e_list += ([f"{item}#{nth}" for item in rng]
                                if i == 4 and nth and nth != "l" else rng)
                 else:
                     if t.startswith('-'):
                         raise CroniterBadCronError((
-                            "[{0}] is not acceptable,"
+                            "[{}] is not acceptable,"
                             "negative numbers not allowed"
                         ).format(expr_format))
                     if not star_or_int_re.search(t):
@@ -765,7 +763,7 @@ class croniter(object):
                              int(t) > cls.RANGES[i][1])
                     ):
                         raise CroniterBadCronError(
-                            "[{0}] is not acceptable, out of range".format(
+                            "[{}] is not acceptable, out of range".format(
                                 expr_format))
 
                     res.append(t)
@@ -776,7 +774,7 @@ class croniter(object):
                         nth_weekday_of_month[t].add(nth)
 
             res = set(res)
-            res = sorted(res, key=lambda i: "{:02}".format(i) if isinstance(i, int) else i)
+            res = sorted(res, key=lambda i: f"{i:02}" if isinstance(i, int) else i)
             if len(res) == cls.LEN_MEANS_ALL[i]:
                 res = ['*']
 
@@ -810,7 +808,7 @@ class croniter(object):
                 globs, locs = _get_caller_globals_and_locals()
                 raise CroniterBadCronError(trace)
             else:
-                raise CroniterBadCronError("{0}".format(exc))
+                raise CroniterBadCronError(f"{exc}")
 
     @classmethod
     def is_valid(cls, expression, hash_id=None):
@@ -935,9 +933,9 @@ class HashExpander:
         if m['range_begin'] and m['range_end'] and m['divisor']:
             # Example: H(30-59)/10 -> 34-59/10 (i.e. 34,44,54)
             if int(m["divisor"]) == 0:
-                raise CroniterBadCronError("Bad expression: {0}".format(expr))
+                raise CroniterBadCronError(f"Bad expression: {expr}")
 
-            return '{0}-{1}/{2}'.format(
+            return '{}-{}/{}'.format(
                 self.do(
                     idx,
                     hash_type=m['hash_type'],
@@ -961,9 +959,9 @@ class HashExpander:
         elif m['divisor']:
             # Example: H/15 -> 7-59/15 (i.e. 7,22,37,52)
             if int(m["divisor"]) == 0:
-                raise CroniterBadCronError("Bad expression: {0}".format(expr))
+                raise CroniterBadCronError(f"Bad expression: {expr}")
 
-            return '{0}-{1}/{2}'.format(
+            return '{}-{}/{}'.format(
                 self.do(
                     idx,
                     hash_type=m['hash_type'],
@@ -1023,16 +1021,18 @@ if __name__ == '__main__':
         '0 0 1,15 * 3',
         '5 0 * 8 *',
         '0 0,12 1 */2 * ',
-        '0 18 1-7,15-21,29-31 * */7',
-        '0 18 8-14,22-28 * */7',
+        # '0 18 1-7,15-21,29-31 * */7',
+        # '0 18 8-14,22-28 * */7',
+        '0 16 */2 * FRI',
+        '0 16 */2 * SAT',
     ]
     for cron in crons_to_try:
         print(f'\n---------- Processing "{cron}"')
         hash_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
         if re.search('h', cron, re.I):
-            c = croniter(cron, datetime.datetime(2023, 5, 1), hash_id=hash_id, implement_cron_bug=True)
+            c = croniter(cron, datetime.datetime(2023, 6, 13), hash_id=hash_id, implement_cron_bug=True)
         else:
-            c = croniter(cron, datetime.datetime(2023, 5, 1), hash_id=hash_id, implement_cron_bug=True)
+            c = croniter(cron, datetime.datetime(2023, 6, 13), hash_id=hash_id, implement_cron_bug=True)
         # print('nth_weekday_of_month:', c.nth_weekday_of_month)
         for i in range(0, 15):
             print(c.get_next(datetime.datetime).strftime("%Y-%m-%d %H:%M:%S (%A)"))

@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 import io
 import os
 from setuptools import setup, find_packages
 
 
 def read(*rnames):
-    return io.open(
+    return open(
         os.path.join('.', *rnames), encoding="utf-8"
     ).read()
 

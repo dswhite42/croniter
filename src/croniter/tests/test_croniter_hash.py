@@ -108,7 +108,7 @@ class CroniterHashTest(CroniterHashBase):
                 'H(11-10) H * * *', datetime(2020, 1, 1, 11, 31), timedelta(minutes=10)
             )
         except (CroniterBadCronError) as ex:
-            self.assertEqual("{0}".format(ex),
+            self.assertEqual(f"{ex}",
                 'Range end must be greater than range begin')
 
     def test_hash_id_bytes(self):

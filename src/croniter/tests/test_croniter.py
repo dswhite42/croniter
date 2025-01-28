@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import unittest
 from datetime import datetime, timedelta
@@ -533,7 +532,7 @@ class CroniterTest(base.TestCase):
         try:
             itr.get_next(datetime)
         except (CroniterBadDateError,) as ex:
-            self.assertEqual("{0}".format(ex),
+            self.assertEqual(f"{ex}",
                              'failed to find next date')
 
     def testBug57(self):
@@ -849,8 +848,8 @@ class CroniterTest(base.TestCase):
         ]
         ret1 = [croniter("0 0 * * *", d[0]).get_next(datetime)
                 for d in local_dates]
-        sret1 = ['{0}'.format(d) for d in ret1]
-        lret1 = ['{0}'.format(d[1]) for d in local_dates]
+        sret1 = [f'{d}' for d in ret1]
+        lret1 = [f'{d[1]}' for d in local_dates]
         self.assertEqual(sret1, lret1)
 
     def test_std_dst3(self):
@@ -960,7 +959,7 @@ class CroniterTest(base.TestCase):
             dt = datetime.utcfromtimestamp(c.get_next())
             ret.append(dt)
             dt += timedelta(days=1)
-        sret = ["{0}".format(r) for r in ret]
+        sret = [f"{r}" for r in ret]
         self.assertEqual(
             sret,
             ['2019-01-15 00:00:00',
@@ -980,7 +979,7 @@ class CroniterTest(base.TestCase):
             dt = datetime.utcfromtimestamp(c.get_next())
             ret.append(dt)
             dt += timedelta(days=1)
-        sret = ["{0}".format(r) for r in ret]
+        sret = [f"{r}" for r in ret]
         self.assertEqual(
             sret,
             ['2019-01-14 00:00:01',
@@ -1003,7 +1002,7 @@ class CroniterTest(base.TestCase):
             dt = datetime.utcfromtimestamp(c.get_next())
             ret.append(dt)
             dt += timedelta(days=1)
-        sret = ["{0}".format(r) for r in ret]
+        sret = [f"{r}" for r in ret]
         self.assertEqual(
             sret,
             ['2019-01-16 00:00:00',
